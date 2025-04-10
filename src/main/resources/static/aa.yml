@@ -1,0 +1,10 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:  # 这里要替换成你的实际网卡名称
+      dhcp4: no
+      addresses: [192.168.56.10/24]  # 静态IP地址和子网掩码
+      gateway4: 192.168.56.1  # 网关地址
+      nameservers:
+        addresses: [8.8.8.8, 8.8.4.4]  # DNS服务器地址
