@@ -3,8 +3,15 @@
 此为管理端。
 
 # hadoop集群服务器配置信息
+## Hadoop配置
 
+格式化：hdfs namenode -format 
+如果修改了配置文件需要重新格式化，记得将所有机器上的datanode和namenode、tmp目录里面的东西都给删除，再在master机器上执行格式化命令。否则会报，clusterId不匹配。
 
+测试： echo "hello world!" > input.txt中，创建这样一个文本文件
+hdfs dfs -mkdir -p /test
+hdfs dfs -put input.txt /test
+hadoop jar hadoop-mapreduce-examples-3.1.3.jar wordcount /test /test/output
 
 
 
@@ -90,8 +97,8 @@ kafka-topics.sh --list --bootstrap-server slave1:9092,slave2:9092,slave3:9092
 
 ## 启动hive(依赖mysql)
 
-配置好后执行此命令初始化一次：schematool -dbType mysql -initSchema
-
+配置好后执行此命令初始化一次（只用首次启动时）：schematool -dbType mysql -initSchema
+弄好后 hive 即可使用hive-cli连接上hive了
 ## 启动Prometheus+Grafana
 
 只在master机器上 ： grafana-server web &

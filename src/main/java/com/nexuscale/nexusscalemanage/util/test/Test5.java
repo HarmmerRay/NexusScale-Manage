@@ -1,7 +1,5 @@
-package com.nexuscale.nexusscalemanage.util;
+package com.nexuscale.nexusscalemanage.util.test;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Scanner;
 
 public class Test5 {

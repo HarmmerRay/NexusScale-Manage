@@ -1,4 +1,6 @@
-package com.nexuscale.nexusscalemanage.util;
+package com.nexuscale.nexusscalemanage.util.test;
+
+import com.nexuscale.nexusscalemanage.entity.User;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -80,16 +82,8 @@ public class Test {
         }
     }
     public static void main(String[] args) {
-        // 两个线程交替打印AB  一个锁的notify和wait
-        Thread thread1 = new Thread(new PrintLetter('A'));
-        Thread thread2 = new Thread(new PrintLetter('B'));
-        thread1.start();
-        thread2.start();
-        try {
-            thread1.join();
-            thread2.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        User user = new User();
+        user.setPhoneNumber("11111111111");
+        System.out.println(user.getPhoneNumber());
     }
 }
