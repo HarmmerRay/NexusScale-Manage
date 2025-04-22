@@ -15,18 +15,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
     @Override
-    public boolean registerUser(User user) {
+    public User registerUser(User user) {
         // 电话查询该用户是否存在
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("phone_number", user.getPhoneNumber());
         List<User> list = userMapper.selectList(queryWrapper);
         if (!list.isEmpty()) {
-            return false;
+            return list.get(0);
         }
         if (userMapper.insert(user) == 1) {
-            return true;
+            return userMapper.selectList(queryWrapper).get(0);
         }else{
-            return false;
+            return null;
         }
     }
 

@@ -6,6 +6,7 @@ import com.nexuscale.nexusscalemanage.util.*;
 import com.nexuscale.nexusscalemanage.entity.User;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +21,18 @@ public class UserController {
     private UserService userService;
     //CRUD
     @PostMapping("/register")
-    public Map<String,Object> register(@RequestParam String phone, @RequestParam String code, HttpServletResponse response) {
-        if (PhoneRegexCheck.isValidPhoneNumber(phone)){
-            if (!CodeCheck.checkCode(phone,code)){
+    public Map<String,Object> register(@RequestParam String phone_number, @RequestParam String code, HttpServletResponse response) {
+        if (PhoneRegexCheck.isValidPhoneNumber(phone_number)){
+            if (!CodeCheck.checkCode(phone_number,code)){
                 return ApiResponse.fail("验证码不正确");
             }
             User user = new User();
-            user.setUserId(UserId.getUserId(phone));
-            user.setPhoneNumber(phone);
-            user.setUserName(phone.substring(7,11));
+            user.setUserId(UserId.getUserId(phone_number));
+            user.setPhoneNumber(phone_number);
+            user.setUserName(phone_number.substring(7,11));
 
-            if (userService.registerUser(user)){
-
+            user = userService.registerUser(user);  // 用户不存在则注册 存在则登录
+            if (user != null){
                 // 生成 token
                 String token = EncryptionDecryption.encrypt(user.getPhoneNumber(),604800);
                 // 创建一个 cookie 并将 token 放入其中
@@ -42,7 +43,7 @@ public class UserController {
 
                 return ApiResponse.success(user);
             }else{
-                return ApiResponse.fail("账号已经被注册或者服务器内部出现问题");
+                return ApiResponse.fail("服务器内部出现问题");
             }
         }else{
             return ApiResponse.fail("Phone number is not valid");
@@ -57,8 +58,19 @@ public class UserController {
         }
         return ApiResponse.fail();
     }
-    @PostMapping("/login")
-    public Map<String,Object> login(@RequestParam String phone, @RequestParam String code, HttpServletResponse response) {
-        return ApiResponse.success();
+    @PostMapping("/verify_token")
+    public Map<String,Object> token_verify(HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie [] cookies = request.getCookies();
+        for (Cookie cookie : cookies){
+            if (cookie.getName().equals("token")){
+                String token = cookie.getValue();
+                String [] res = EncryptionDecryption.decrypt(token);
+                System.out.println(res[0]);
+                System.out.println(res[1]);
+                return ApiResponse.success(res);
+            }
+        }
+        return ApiResponse.fail();
     }
 }

@@ -108,6 +108,10 @@ kafka-topics.sh --list --bootstrap-server slave1:9092,slave2:9092,slave3:9092
 所有机器上运行 node_export &
 
 
+## 启动ElasticSearch+Kibana
+四台机器 cd elastisearch/bin     ./elasticsearch
+一台机器 cd kibana/bin ./kibana
+
 
 
 
