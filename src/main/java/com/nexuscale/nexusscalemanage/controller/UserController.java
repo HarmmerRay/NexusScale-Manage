@@ -8,9 +8,13 @@ import com.nexuscale.nexusscalemanage.entity.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Date;
 import java.util.Map;
 
 
@@ -19,7 +23,7 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
-    //CRUD
+    //CRUD  登录和注册都有了。
     @PostMapping("/register")
     public Map<String,Object> register(@RequestParam String phone_number, @RequestParam String code, HttpServletResponse response) {
         if (PhoneRegexCheck.isValidPhoneNumber(phone_number)){
@@ -33,13 +37,21 @@ public class UserController {
 
             user = userService.registerUser(user);  // 用户不存在则注册 存在则登录
             if (user != null){
-                // 生成 token
-                String token = EncryptionDecryption.encrypt(user.getPhoneNumber(),604800);
-                // 创建一个 cookie 并将 token 放入其中
+                // 生成 token 7天过期时间  7 * 24 * 60 * 60 * 1000  单位是毫秒
+                String token = EncryptionDecryption.encrypt(user.getPhoneNumber(),new Date().getTime() + 604800000);
+                // 创建一个 cookie 并将 token 放入其中,给前端存储Token使用（作为鉴权）
                 Cookie tokenCookie = new Cookie("token", token);
                 tokenCookie.setPath("/");
-                tokenCookie.setMaxAge(604800); // 设置 cookie 的有效期为 7 天 7 * 24 * 60 * 60
+                tokenCookie.setMaxAge(604800); // 设置 cookie 的有效期为 7 天 7 * 24 * 60 * 60  单位是 秒
                 response.addCookie(tokenCookie);
+
+                // 在SpringBoot框架中 将user存储在请求的Session 会话中
+                ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                if (attributes != null) {
+                    HttpServletRequest request = attributes.getRequest();
+                    HttpSession session = request.getSession();
+                    session.setAttribute("userId", user.getUserId());
+                }
 
                 return ApiResponse.success(user);
             }else{
@@ -66,8 +78,8 @@ public class UserController {
             if (cookie.getName().equals("token")){
                 String token = cookie.getValue();
                 String [] res = EncryptionDecryption.decrypt(token);
-                System.out.println(res[0]);
-                System.out.println(res[1]);
+//                System.out.println(res[0]);
+//                System.out.println(res[1]);
                 return ApiResponse.success(res);
             }
         }

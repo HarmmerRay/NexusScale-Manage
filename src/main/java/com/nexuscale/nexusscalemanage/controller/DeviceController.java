@@ -1,17 +1,21 @@
 package com.nexuscale.nexusscalemanage.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.nexuscale.nexusscalemanage.entity.Device;
+import com.nexuscale.nexusscalemanage.service.DeviceService;
+import com.nexuscale.nexusscalemanage.util.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/device")
 public class DeviceController {
+    @Autowired
+    DeviceService deviceService;
+
     @PostMapping("/change_sensor_state")
     public Map<String, String> changeSensorState(@RequestParam boolean state, @RequestParam int sensor_id) {
         System.out.println("state: " + state);
@@ -25,5 +29,17 @@ public class DeviceController {
         }
 
         return dict;
+    }
+    @GetMapping("/all_devices")
+    public Map<String, Object> allDevices(@RequestParam String user_id) {
+        System.out.println("user_id: " + user_id);
+        List<Device> devices =  deviceService.allDevices(user_id);
+        System.out.println("devices: " + devices);
+        return ApiResponse.success(devices);
+    }
+
+    @PostMapping("/create_device")
+    public Map<String,Object> createDevice(@RequestBody Device device) {
+        return ApiResponse.success(deviceService.createDevice(device));
     }
 }

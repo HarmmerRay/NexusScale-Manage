@@ -61,10 +61,16 @@ public class EncryptionDecryption {
         }
     }
 
-    public static void main(String[] args) {
+    public static boolean isValid(String encryptedData) {
+        String []str = decrypt(encryptedData);
+//        System.out.println(Long.parseLong(str[1]));
+//        System.out.println(new Date().getTime());
+        return Long.parseLong(str[1]) - new Date().getTime() > 0;
+    }
+    public static void main(String[] args) throws InterruptedException {
 //        System.out.println(SECRET_KEY);
         String phoneNumber = "1234567890";
-        long expirationTime = new Date().getTime() + 3600000; // 过期时间为当前时间加 1 小时  60 60
+        long expirationTime = new Date().getTime() + 604800000; // 过期时间为当前时间加 7 天  60 60   时间戳是毫秒级
 
         String encrypted = encrypt(phoneNumber, expirationTime);
         System.out.println("加密后的数据: " + encrypted);
@@ -72,6 +78,10 @@ public class EncryptionDecryption {
         String[] decrypted = decrypt(encrypted);
         System.out.println("解密后的电话号码: " + decrypted[0]);
         System.out.println("解密后的过期时间: " + decrypted[1]);
-        System.out.println(new Date().getTime());
+        System.out.println(Long.parseLong(decrypted[1]) - new Date().getTime());
+        for (int i = 0; i < 10; i++) {
+            System.out.println(new Date().getTime());
+            Thread.sleep(1000);
+        }
     }
 }

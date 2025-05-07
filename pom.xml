@@ -72,6 +72,12 @@
 			<version>3.5.11</version>
 		</dependency>
 		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser</artifactId>   <!-- .m2/repository中删除上面的starter即 com.baomidou文件夹，再先引入这个starter后引入jsqlparser（不可同时引入） -->
+			<version>3.5.11</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>

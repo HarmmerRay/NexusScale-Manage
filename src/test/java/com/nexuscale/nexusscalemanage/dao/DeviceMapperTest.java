@@ -12,7 +12,12 @@ public class DeviceMapperTest {
     @Test
     public void insert() {
         Device device = new Device();
-        device.setDeviceName("test");
-        deviceMapper.insert(device);
+        device.setDeviceMac("TS-"+System.currentTimeMillis());
+        device.setDeviceName("温度传感器3");
+        device.setState(0);
+        device.setUserId("13290824341-1744973022235");
+        int res = deviceMapper.insert(device);
+        System.out.println("res:"+res);
+//        System.out.println(System.currentTimeMillis());
     }
 }

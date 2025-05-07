@@ -30,7 +30,7 @@ public class Device {
 
     @ApiModelProperty("设备状态")
     @TableField("state")
-    private String state;
+    private Integer state;
 
     @ApiModelProperty("用户外键")
     @TableField("user_id")
