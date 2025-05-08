@@ -4,11 +4,10 @@ import com.nexuscale.nexusscalemanage.entity.Log;
 import com.nexuscale.nexusscalemanage.service.LogService;
 import com.nexuscale.nexusscalemanage.util.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -36,5 +35,16 @@ public class LogController {
         }else{
             return ApiResponse.success(searchKeyWord);
         }
+    }
+    @PostMapping("/deleteLog")
+    public Map<String, Object> deleteLog(@RequestParam("dateTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+        // 前端使用yyyy-MM-dd HH:mm:ss  {"dateTime":""}字符串即可
+
+        return ApiResponse.success();
+    }
+    @PostMapping("/batchDeleteLog")
+    public Map<String, Object> batchDeleteLog(@RequestParam("dateTimeList") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")  List<LocalDateTime> localDateTimeList) {
+        // 前端拼接dateTime列表来传输，[] 其中每个元素是 时间字符串
+        return ApiResponse.success(localDateTimeList);
     }
 }

@@ -47,20 +47,21 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public int batchDeleteLog(List<Log> logs) {
+    public int batchDeleteLog(List<Log> logs) {  // 返回了删除的日志数量
         // operation_time在 logs[0].getOperationTime 和 logs[9].getOperationTime之间的所有log
         LocalDateTime startTime = logs.get(0).getOperationTime();
         LocalDateTime endTime = logs.get(logs.size()-1).getOperationTime();
         QueryWrapper<Log> queryWrapper = new QueryWrapper<>();
-        // 确保开始时间小于等于结束时间
+        // 确保开始时间先于结束时间
         if (startTime.isAfter(endTime)) {
             LocalDateTime temp = startTime;
             startTime = endTime;
             endTime = temp;
         }
+        System.out.println("startTime:"+startTime + " " + "endTime:"+ endTime);
         queryWrapper.between("operation_time",startTime,endTime);
-//        return logMapper.delete(queryWrapper);
-        return 0;
+        return logMapper.delete(queryWrapper);
+//        return 0;
     }
 
     @Override
