@@ -50,4 +50,7 @@ public class Log {
         map.put("method",method);
         return map;
     }
+    public Log(LocalDateTime operationTime){
+        this.operationTime = operationTime;
+    }
 }

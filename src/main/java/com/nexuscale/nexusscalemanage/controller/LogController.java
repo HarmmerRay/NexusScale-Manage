@@ -46,8 +46,14 @@ public class LogController {
         return ApiResponse.success();
     }
     @PostMapping("/batchDeleteLog")
-    public Map<String, Object> batchDeleteLog(@RequestParam("dateTimeList") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")  List<LocalDateTime> localDateTimeList) {
+    public Map<String, Object> batchDeleteLog(@RequestParam("startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,@RequestParam("endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
         // 前端拼接dateTime列表来传输，[] 其中每个元素是 时间字符串
-        return ApiResponse.success(localDateTimeList);
+        System.out.println(startTime);
+        System.out.println(endTime);
+        List<Log> logs = new ArrayList<>();
+        logs.add(new Log(startTime));
+        logs.add(new Log(endTime));
+        System.out.println(logService.batchDeleteLog(logs));
+        return ApiResponse.success();
     }
 }
