@@ -32,7 +32,7 @@ public class LogServiceImpl implements LogService {
         Page<Log> logPage = new Page<>(currentPage,pageSize);
         QueryWrapper<Log> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("operation_time");
-        System.out.println(currentPage + " " + pageSize);
+//        System.out.println(currentPage + " " + pageSize);
         return logMapper.selectPage(logPage,queryWrapper).getRecords();
     }
 

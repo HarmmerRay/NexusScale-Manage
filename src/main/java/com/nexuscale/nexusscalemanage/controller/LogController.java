@@ -26,7 +26,7 @@ public class LogController {
             for (Log log : resLog) {
                 list.add(log.toDict());
             }
-            System.out.println(list);
+//            System.out.println(list);
             Map<String, Object> map = ApiResponse.success(list);
             map.put("currentPage", currentPage);
             map.put("total", logService.getLogCount());
@@ -39,7 +39,10 @@ public class LogController {
     @PostMapping("/deleteLog")
     public Map<String, Object> deleteLog(@RequestParam("dateTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
         // 前端使用yyyy-MM-dd HH:mm:ss  {"dateTime":""}字符串即可
-
+        System.out.println(localDateTime);
+        Log log = new Log();
+        log.setOperationTime(localDateTime);
+        System.out.println(logService.deleteLog(log));
         return ApiResponse.success();
     }
     @PostMapping("/batchDeleteLog")
