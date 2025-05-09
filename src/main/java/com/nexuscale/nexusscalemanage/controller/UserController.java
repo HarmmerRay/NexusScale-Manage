@@ -44,6 +44,10 @@ public class UserController {
                 tokenCookie.setPath("/");
                 tokenCookie.setMaxAge(604800); // 设置 cookie 的有效期为 7 天 7 * 24 * 60 * 60  单位是 秒
                 response.addCookie(tokenCookie);
+                Cookie userIdCookie = new Cookie("userId",user.getUserId());   // 此处不能直接在tokenCookie那添加,是无效的
+                userIdCookie.setPath("/");
+                userIdCookie.setMaxAge(604800);
+                response.addCookie(userIdCookie);
 
                 // 在SpringBoot框架中 将user存储在请求的Session 会话中
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

@@ -21,6 +21,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         for (Cookie cookie : cookies){
             if (cookie.getName().equals("token")){
                 String token = cookie.getValue();
+                EncryptionDecryption.decrypt(token);
 //                System.out.println(EncryptionDecryption.isValid(token));
                 return EncryptionDecryption.isValid(token);
             }

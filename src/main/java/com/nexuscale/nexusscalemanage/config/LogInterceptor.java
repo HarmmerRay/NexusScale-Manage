@@ -47,7 +47,16 @@ public class LogInterceptor implements HandlerInterceptor{
         if (request.getSession().getAttribute("userId") != null) {
             userId = request.getSession().getAttribute("userId").toString();
         }
+        if (userId == null) {
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies){
+                if (cookie.getName().equals("userId")){
+                    userId = cookie.getValue();
+                }
+            }
+        }
 
+        System.out.println("userId = " + userId);
         // 当前时间
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         // 打印获取到的信息
