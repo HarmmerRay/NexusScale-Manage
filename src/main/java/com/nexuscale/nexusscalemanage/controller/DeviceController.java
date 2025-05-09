@@ -32,9 +32,9 @@ public class DeviceController {
     }
     @GetMapping("/all_devices")
     public Map<String, Object> allDevices(@RequestParam String user_id) {
-        System.out.println("user_id: " + user_id);
+//        System.out.println("user_id: " + user_id);
         List<Device> devices =  deviceService.allDevices(user_id);
-        System.out.println("devices: " + devices);
+//        System.out.println("devices: " + devices);
         return ApiResponse.success(devices);
     }
 

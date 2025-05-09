@@ -37,13 +37,26 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<Log> getPageLogs(int currentPage,int pageSize, String searchKeyWord) {
-        return List.of();
+    public List<Log> getPageLogsTimeDesc(int currentPage,int pageSize, String searchKeyWord) {
+        Page<Log> logPage = new Page<>(currentPage,pageSize);
+        QueryWrapper<Log> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("operation_time");
+        queryWrapper.like("path",searchKeyWord);
+//        System.out.println(currentPage + " " + pageSize);
+        return logMapper.selectPage(logPage,queryWrapper).getRecords();
     }
 
     @Override
     public long getLogCount() {
         return  logMapper.selectPage(new Page<Log>(1,10),null).getTotal();
+    }
+
+    @Override
+    public long getLogCountSearch(String searchKeyWord) {
+        Page<Log> logPage = new Page<>(1,10);
+        QueryWrapper<Log> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("path",searchKeyWord);
+        return logMapper.selectPage(logPage,queryWrapper).getTotal();
     }
 
     @Override

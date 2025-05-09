@@ -8,8 +8,9 @@ public interface LogService {
     // 分页查询日志
     List<Log> getPageLogs(int currentPage,int pageSize);
     List<Log> getPageLogsTimeDesc(int currentPage,int pageSize);
-    List<Log> getPageLogs(int currentPage,int pageSize,String searchKeyWord);
+    List<Log> getPageLogsTimeDesc(int currentPage,int pageSize,String searchKeyWord);
     long getLogCount();
+    long getLogCountSearch(String searchKeyWord);
     // 批量删除日志
     int batchDeleteLog(List<Log> logs);
     // 删除单个日志

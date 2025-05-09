@@ -33,7 +33,19 @@ public class LogController {
             map.put("pageSize", pageSize);
             return map;
         }else{
-            return ApiResponse.success(searchKeyWord);
+            // todo 根据关键字查询  日志则是对应的路径
+            System.out.println(currentPage + " " + pageSize + " " + searchKeyWord);
+            List<Log> resLog = logService.getPageLogsTimeDesc(currentPage,pageSize,searchKeyWord);
+            System.out.println(resLog);
+            List<Map<String,Object>> list = new LinkedList<>();
+            for (Log log : resLog) {
+                list.add(log.toDict());
+            }
+            Map<String, Object> map = ApiResponse.success(list);
+            map.put("currentPage", currentPage);
+            map.put("total", logService.getLogCountSearch(searchKeyWord));
+            map.put("pageSize", pageSize);
+            return map;
         }
     }
     @PostMapping("/deleteLog")
