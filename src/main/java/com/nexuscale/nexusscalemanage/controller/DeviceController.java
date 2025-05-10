@@ -40,6 +40,22 @@ public class DeviceController {
 
     @PostMapping("/create_device")
     public Map<String,Object> createDevice(@RequestBody Device device) {
+        // 设备种类：温度、湿度、空气质量、土壤氮磷钾、PH值、微量元素、风速、风向、光照强度、
         return ApiResponse.success(deviceService.createDevice(device));
+    }
+    @PostMapping("/delete_device")
+    public Map<String,Object> deleteDevice(@RequestBody long device_id) {
+        return ApiResponse.success(deviceService.deleteDevice(device_id));
+    }
+    @PostMapping("/batch_delete_devices")
+    public Map<String,Object> batchDeleteDevice(@RequestBody List<Long> device_ids) {
+        return ApiResponse.success(deviceService.batchDeleteDevices(device_ids));
+    }
+    @GetMapping("/search_device")
+    public Map<String,Object> searchDevices(@RequestParam String searchKey) {
+        if (searchKey == null || searchKey.trim().isEmpty()) {
+            return ApiResponse.fail("没有searchKey"); // 无搜索条件时返回所有设备（根据需求决定）
+        }
+        return ApiResponse.success(deviceService.searchDevices(searchKey));
     }
 }

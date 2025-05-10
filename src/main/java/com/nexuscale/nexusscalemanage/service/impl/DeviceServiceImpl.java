@@ -1,6 +1,8 @@
 package com.nexuscale.nexusscalemanage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.nexuscale.nexusscalemanage.dao.DeviceMapper;
 import com.nexuscale.nexusscalemanage.entity.Device;
 import com.nexuscale.nexusscalemanage.service.DeviceService;
@@ -25,6 +27,23 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    public List<Device> searchDevices(String searchKey) {
+        // searchKey 是user_id或device_name，以此来调用deviceMapper的功能实现devices数据的查找
+        String keyword = searchKey.trim();
+
+        // 使用 LambdaQueryWrapper 构建动态查询条件
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+
+        // 尝试匹配 user_id（精确查询）或 device_name（模糊查询）
+        wrapper
+                .eq(Device::getUserId, keyword) // 处理 user_id 精确匹配
+                .or() // 或者
+                .like(Device::getDeviceName, keyword); // 处理 device_name 模糊匹配
+
+        return deviceMapper.selectList(wrapper);
+    }
+
+    @Override
     public Device createDevice(Device device) {
         if (deviceMapper.insert(device) == 1){
             return device;
@@ -33,11 +52,20 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Device deleteDevice(Device device) {
-        if (deviceMapper.deleteById(device.getDeviceId()) == 1){
-            return device;
+    public int deleteDevice(long device_id) {
+        return deviceMapper.deleteById(device_id);
+    }
+
+    @Override
+    public int batchDeleteDevices(List<Long> device_ids) {
+        // 批量删除这一批device_ids对应的各个设备记录。
+        if (device_ids == null || device_ids.isEmpty()) {
+            return 0; // 避免无效操作
         }
-        return null;
+
+        // 使用MyBatis-Plus的delete方法，通过ID集合批量删除
+        return deviceMapper.delete(Wrappers.<Device>lambdaQuery()
+                .in(Device::getDeviceId, device_ids));
     }
 
     @Override

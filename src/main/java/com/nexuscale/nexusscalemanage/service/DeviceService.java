@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface DeviceService {
     List<Device> allDevices(String userId);
-    // 创建 删除 修改
+    List<Device> searchDevices(String searchKey);
     Device createDevice(Device device);
-    Device deleteDevice(Device device);
+    int deleteDevice(long device_id);
+    int batchDeleteDevices(List<Long> device_ids);
     Device updateDevice(Device device);
 }
