@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Device {
     @ApiModelProperty("设备主键")
     @TableId(value = "device_id",type = IdType.AUTO)
-    private Integer deviceId;
+    private Long deviceId;
 
     @ApiModelProperty("设备标识号")
     @TableField("device_mac")

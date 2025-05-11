@@ -63,4 +63,11 @@ public class DeviceController {
         }
         return ApiResponse.success(deviceService.searchDevices(searchKey));
     }
+    @PostMapping("/update_device_name")
+    public Map<String,Object> updateDeviceName(@RequestParam long deviceId,@RequestParam String deviceName, HttpServletRequest request) {
+        Device dev = new Device();
+        dev.setDeviceId(deviceId);
+        dev.setDeviceName(deviceName);
+        return ApiResponse.success(deviceService.updateDevice(dev));
+    }
 }
