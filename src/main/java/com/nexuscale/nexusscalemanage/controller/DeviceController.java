@@ -3,6 +3,7 @@ package com.nexuscale.nexusscalemanage.controller;
 import com.nexuscale.nexusscalemanage.entity.Device;
 import com.nexuscale.nexusscalemanage.service.DeviceService;
 import com.nexuscale.nexusscalemanage.util.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,17 +40,21 @@ public class DeviceController {
     }
 
     @PostMapping("/create_device")
-    public Map<String,Object> createDevice(@RequestBody Device device) {
+    public Map<String,Object> createDevice(HttpServletRequest request, @RequestBody Device device) {
+        device.setUserId(request.getSession().getAttribute("userId").toString());
+//        System.out.println("device: " + device);
         // 设备种类：温度、湿度、空气质量、土壤氮磷钾、PH值、微量元素、风速、风向、光照强度、
         return ApiResponse.success(deviceService.createDevice(device));
     }
     @PostMapping("/delete_device")
-    public Map<String,Object> deleteDevice(@RequestBody long device_id) {
-        return ApiResponse.success(deviceService.deleteDevice(device_id));
+    public Map<String,Object> deleteDevice(@RequestParam long deviceId) {
+
+        return ApiResponse.success(deviceService.deleteDevice(deviceId));
     }
     @PostMapping("/batch_delete_devices")
-    public Map<String,Object> batchDeleteDevice(@RequestBody List<Long> device_ids) {
-        return ApiResponse.success(deviceService.batchDeleteDevices(device_ids));
+    public Map<String,Object> batchDeleteDevice(@RequestBody List<Long> deviceIds) {
+        System.out.println("deviceIds: " + deviceIds);
+        return ApiResponse.success(deviceService.batchDeleteDevices(deviceIds));
     }
     @GetMapping("/search_device")
     public Map<String,Object> searchDevices(@RequestParam String searchKey) {

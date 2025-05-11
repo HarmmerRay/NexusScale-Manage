@@ -52,11 +52,12 @@ public class LogInterceptor implements HandlerInterceptor{
             for (Cookie cookie : cookies){
                 if (cookie.getName().equals("userId")){
                     userId = cookie.getValue();
+                    request.getSession().setAttribute("userId", userId);
                 }
             }
         }
 
-        System.out.println("userId = " + userId);
+//        System.out.println("userId = " + userId);
         // 当前时间
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         // 打印获取到的信息
