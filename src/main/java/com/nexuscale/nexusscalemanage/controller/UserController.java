@@ -153,6 +153,20 @@ public class UserController {
         user.setLevel(level);
         return ApiResponse.success(userService.updateUser(user));
     }
+    @PostMapping("/change_avatar")
+    public Map<String,Object> update_avatar(@RequestParam String userId, @RequestParam String avatarUrl) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setAvatarUrl(avatarUrl);
+        return ApiResponse.success(userService.updateUser(user));
+    }
+    @PostMapping("/change_phone")
+    public Map<String,Object> update_phone(@RequestParam String userId,@RequestParam String phoneNumber) {
+        User user = new User();
+        user.setPhoneNumber(phoneNumber);
+        user.setUserId(userId);
+        return ApiResponse.success(userService.updateUser(user));
+    }
     @GetMapping("/search_users") //可以根据用户名、电话号码、角色来查找
      public Map<String,Object> search_users(@RequestParam int currentPage,@RequestParam int pageSize,@RequestParam String keyword) {
 
