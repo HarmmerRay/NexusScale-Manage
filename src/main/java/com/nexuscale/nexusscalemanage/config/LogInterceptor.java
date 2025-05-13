@@ -67,8 +67,13 @@ public class LogInterceptor implements HandlerInterceptor{
 //        System.out.println("用户 ID: " + userId);
 //        System.out.println("IP 地址: " + clientIp);
 //        System.out.println("请求方式: " + requestMethod);
-
-        Log log = new Log(timestamp.toLocalDateTime(),requestPath,requestParams.toString(),userId,clientIp,requestMethod);
+        String requestParam = requestParams.toString();
+        if (requestPath.equals("/user/upload_avatar")){
+            requestParam = "图片base64";
+        }
+        System.out.println(requestPath);
+        Log log = new Log(timestamp.toLocalDateTime(),requestPath,requestParam,userId,clientIp,requestMethod);
+        System.out.println(log);
         logService.insertLog(log);
         return true;
     }

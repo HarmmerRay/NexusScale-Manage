@@ -34,7 +34,6 @@ public class LogController {
             map.put("pageSize", pageSize);
             return map;
         }else{
-            // todo 根据关键字查询  日志则是对应的路径
 //            System.out.println(currentPage + " " + pageSize + " " + searchKeyWord);
             List<Log> resLog = logService.getPageLogsTimeDesc(currentPage,pageSize,searchKeyWord);
             System.out.println(resLog);

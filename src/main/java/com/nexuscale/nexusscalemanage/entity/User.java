@@ -31,6 +31,10 @@ public class User {
     @TableField("user_name")
     private String userName;
 
+    @ApiModelProperty("用户权限")
+    @TableField("level")
+    private int level;
+
     @ApiModelProperty("头像存储地址")
     @TableField("avatar_url")
     private String avatarUrl;

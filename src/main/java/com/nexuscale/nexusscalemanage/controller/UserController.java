@@ -13,8 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -88,5 +94,72 @@ public class UserController {
             }
         }
         return ApiResponse.fail();
+    }
+    @PostMapping("/create_user")
+    public Map<String,Object> create_user(@RequestParam String phoneNumber, @RequestParam String userName, @RequestParam int level,@RequestParam String avatarUrl) {
+        User user = new User();
+        user.setPhoneNumber(phoneNumber);
+        user.setUserName(userName);
+        user.setLevel(level);
+        user.setAvatarUrl(avatarUrl);
+        return ApiResponse.success(userService.registerUser(user));
+    }
+    @PostMapping(value = "/upload_avatar")
+    public Map<String,Object> upload_avatar(@RequestParam("image") MultipartFile file) {    // base64传输图片行不通，此处浏览器会自动将 / 改为%2F，还得自己手动编写解析代码 先解析转义字符再解析base64编码。
+        try {
+            if (file.isEmpty()) {
+                return ApiResponse.fail("请选择要上传的文件");
+            }
+
+            // 保存文件
+            Path uploadPath = Paths.get("C:\\Users\\26247\\Desktop\\zy\\NexusScale-Manage\\src\\main\\resources\\pic");
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = "avatar" + System.currentTimeMillis() + ".png";
+            Path filePath = uploadPath.resolve(fileName);
+            Files.write(filePath, file.getBytes());
+            // 上传到OSS上
+            String avatarUrl = AliYun.uploadFile(filePath.toString(),"avatar/"+fileName);
+            System.out.println(avatarUrl);
+            return ApiResponse.success(avatarUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiResponse.fail();
+        }
+    }
+
+    @PostMapping("/delete_user")
+    public Map<String,Object> delete_user(@RequestParam String userId) {
+        return ApiResponse.success(userService.deleteUser(userId));
+    }
+    @PostMapping("/batch_delete_users")
+    public Map<String,Object> batch_delete_users(@RequestBody List<String> ids) {
+        System.out.println(ids);
+        return ApiResponse.success(userService.batchDeleteUser(ids));
+    }
+    @PostMapping("/change_user_name") //给管理员修改其它用户的用户名用，也可以用户修改自己的个人信息时候调用
+    public Map<String,Object> update_user(@RequestParam String userId, @RequestParam String userName) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setUserName(userName);
+        return ApiResponse.success(userService.updateUser(user));
+    }
+    @PostMapping("/change_user_level")
+    public Map<String,Object> update_user_level(@RequestParam String userId, @RequestParam int level) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setLevel(level);
+        return ApiResponse.success(userService.updateUser(user));
+    }
+    @GetMapping("/search_users") //可以根据用户名、电话号码、角色来查找
+     public Map<String,Object> search_users(@RequestParam int currentPage,@RequestParam int pageSize,@RequestParam String keyword) {
+
+        Map<String, Object> map = ApiResponse.success(userService.searchUser(currentPage,pageSize,keyword));
+        map.put("currentPage", currentPage);
+        map.put("total", userService.getUserCount(keyword));
+        map.put("pageSize", pageSize);
+        return map;
     }
 }
