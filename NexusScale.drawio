@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0" version="27.0.3">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0" version="27.0.6">
   <diagram id="JMlI0H6a8-ccV5MEZNfv" name="架构图">
-    <mxGraphModel dx="1861" dy="578" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2206" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -100,8 +100,29 @@
         <mxCell id="vUfbIQZDhjZ6JKx2mkCL-5" value="设备模型：空气检测器分为：温湿度检测（温度、湿度）、空气质量检测（PM2.5、醛类物质、氮氧化合物）、风速风向检测（风速、风向）、全能检测" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="50" y="670" width="500" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="sqef_c-enx4W838c0ly5-1" value="数据呈现页面，数据刷新时间30s、一分钟、五分钟、30分钟、1小时、3小时" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="sqef_c-enx4W838c0ly5-1" value="数据呈现页面，数据刷新时间30s、一分钟、五分钟、30分钟、1小时、3小时" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="50" y="780" width="500" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="omsRGE20007jfRBBsK9V-1" target="omsRGE20007jfRBBsK9V-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-1" value="manager" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-50" y="930" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-2" value="IOT" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="414" y="930" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="omsRGE20007jfRBBsK9V-3" target="omsRGE20007jfRBBsK9V-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-3" value="redis" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="210" y="920" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-6" value="Text" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="370" y="930" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="omsRGE20007jfRBBsK9V-7" value="根据传感器类别，对应到数据模板，生成各类传感器数据（不存在无效数据），如温度、湿度数据，写入kafaka中，然后写入hbase中，hbase提供实时数据和过去数据。应该如何设计，包括但不限于代码和表的设计。" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-10" y="810" width="510" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
