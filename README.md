@@ -13,6 +13,7 @@ hdfs dfs -mkdir -p /test
 hdfs dfs -put input.txt /test
 hadoop jar hadoop-mapreduce-examples-3.1.3.jar wordcount /test /test/output
 
+## Hive配置
 
 
 ## Prometheus+Grafana配置
@@ -88,8 +89,9 @@ master单机执行 start-hbase.sh
 
 三台slave机器执行：进入到kafka_2.13-3.0.0:目录下执行 
         kafka-server-start.sh -daemon config/server.properties
+启动成功后JPS会显示QuorumPeerMain  
 测试：
-创建topic:
+创建topic(在一台机器上执行即可):
 kafka-topics.sh --create --bootstrap-server slave1:9092,slave2:9092,slave3:9092 --topic topicName --partitions 3 --replication-factor 2
 
 列出topic：
@@ -98,15 +100,18 @@ kafka-topics.sh --list --bootstrap-server slave1:9092,slave2:9092,slave3:9092
 ## 启动hive(依赖mysql)
 
 配置好后执行此命令初始化一次（只用首次启动时）：schematool -dbType mysql -initSchema
-弄好后 hive 即可使用hive-cli连接上hive了
+终端连接：弄好后 hive 即可使用hive-cli连接上hive了  
+服务端启动：hive --service hiveserver2 &  （允许使用jdbc访问hive）  
+使用beeline -u "jdbc:hive2://localhost:10000" -n root -p 111111
+
 ## 启动Prometheus+Grafana
 
-只在master机器上 ： grafana-server web &
+只在master机器上 ：   
+1、./node_exporter &  所有机器上执行  进入到node文件夹底下  
+2、./prometheus --config.file=prometheus.yml &  prometheus文件夹里面  
+3、grafana-server web & 进入grafana bin里面
 
-​					./prometheus --config.file=prometheus.yml &
-
-所有机器上运行 node_export &
-
+浏览器访问http://192.168.56.10:3000 admin 111111
 
 ## 启动ElasticSearch+Kibana
 四台机器 cd elastisearch/bin     ./elasticsearch
