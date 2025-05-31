@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.nexuscale.nexusscalemanage.dao.DeviceMapper;
+import com.nexuscale.nexusscalemanage.dao.DeviceTemplateMapper;
 import com.nexuscale.nexusscalemanage.entity.Device;
+import com.nexuscale.nexusscalemanage.entity.DeviceTemplate;
 import com.nexuscale.nexusscalemanage.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.List;
 public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private DeviceMapper deviceMapper;
+    @Autowired
+    private DeviceTemplateMapper deviceTemplateMapper;
 
     @Override
     public List<Device> allDevices(String userId) {
@@ -112,5 +116,17 @@ public class DeviceServiceImpl implements DeviceService {
         // 执行更新操作
         int result = deviceMapper.update(device, wrapper);
         return result > 0;
+    }
+
+    @Override
+    public DeviceTemplate getDeviceTemplateByDeviceId(int deviceId) {
+        // 先查询设备信息获取dt_id
+        Device device = deviceMapper.selectById(deviceId);
+        if (device == null || device.getDtId() == null) {
+            return null;
+        }
+        
+        // 根据dt_id查询设备模板
+        return deviceTemplateMapper.selectById(device.getDtId());
     }
 }

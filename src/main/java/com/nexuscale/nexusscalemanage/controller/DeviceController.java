@@ -1,9 +1,11 @@
 package com.nexuscale.nexusscalemanage.controller;
 
+import com.nexuscale.nexusscalemanage.dto.DeviceStateMessage;
 import com.nexuscale.nexusscalemanage.entity.Device;
 import com.nexuscale.nexusscalemanage.entity.DeviceTemplate;
 import com.nexuscale.nexusscalemanage.service.DeviceService;
 import com.nexuscale.nexusscalemanage.service.DeviceTemplateService;
+import com.nexuscale.nexusscalemanage.service.RedisService;
 import com.nexuscale.nexusscalemanage.util.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class DeviceController {
     DeviceService deviceService;
     @Autowired
     DeviceTemplateService deviceTemplateService;
+    @Autowired
+    RedisService redisService;
 
     @PostMapping("/change_sensor_state")
     public Map<String, Object> changeSensorState(@RequestParam int state, @RequestParam int deviceId) {
@@ -27,10 +31,26 @@ public class DeviceController {
         System.out.println("设备ID: " + deviceId);
         
         try {
-            // 调用服务层更新设备状态
+            // 1. 调用服务层更新设备状态
             boolean success = deviceService.updateDeviceState(deviceId, state);
             
             if (success) {
+                // 2. 查询设备模板信息获取en_name作为Redis topic
+                DeviceTemplate deviceTemplate = deviceService.getDeviceTemplateByDeviceId(deviceId);
+                
+                if (deviceTemplate != null && deviceTemplate.getEnName() != null) {
+                    // 3. 创建设备状态消息对象
+                    DeviceStateMessage message = new DeviceStateMessage(deviceId, state);
+                    
+                    // 4. 推送消息到Redis list
+                    String topic = deviceTemplate.getEnName();
+                    redisService.pushDeviceStateMessage(topic, message);
+                    
+                    System.out.println("设备状态消息已推送到Redis topic: " + topic);
+                } else {
+                    System.out.println("警告: 未找到设备模板或en_name为空，跳过Redis推送");
+                }
+                
                 String statusMsg = (state == 1) ? "开启" : "关闭";
                 return ApiResponse.success("设备状态修改成功，当前状态" + statusMsg);
             } else {

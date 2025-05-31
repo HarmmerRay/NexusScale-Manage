@@ -79,7 +79,9 @@ UPDATE device SET state = ? WHERE device_id = ?
 1. **接收参数**: 获取前端传递的 `deviceId` 和 `state` 参数
 2. **参数验证**: 验证参数的有效性
 3. **数据库更新**: 调用 `DeviceService.updateDeviceState()` 方法更新设备状态
-4. **结果返回**: 根据更新结果返回相应的响应消息
+4. **联查设备模板**: 根据 `deviceId` 联查 `device` 和 `device_template` 表获取 `en_name`
+5. **Redis推送**: 使用 `en_name` 作为Redis list的topic，推送设备状态消息
+6. **结果返回**: 根据更新结果返回相应的响应消息
 
 ## 实现细节
 
@@ -106,10 +108,22 @@ public boolean updateDeviceState(int deviceId, int state) {
 @PostMapping("/change_sensor_state")
 public Map<String, Object> changeSensorState(@RequestParam int state, @RequestParam int deviceId) {
     try {
-        // 调用服务层更新设备状态
+        // 1. 调用服务层更新设备状态
         boolean success = deviceService.updateDeviceState(deviceId, state);
         
         if (success) {
+            // 2. 查询设备模板信息获取en_name作为Redis topic
+            DeviceTemplate deviceTemplate = deviceService.getDeviceTemplateByDeviceId(deviceId);
+            
+            if (deviceTemplate != null && deviceTemplate.getEnName() != null) {
+                // 3. 创建设备状态消息对象
+                DeviceStateMessage message = new DeviceStateMessage(deviceId, state);
+                
+                // 4. 推送消息到Redis list
+                String topic = deviceTemplate.getEnName();
+                redisService.pushDeviceStateMessage(topic, message);
+            }
+            
             String statusMsg = (state == 1) ? "开启" : "关闭";
             return ApiResponse.success("设备状态修改成功，当前状态" + statusMsg);
         } else {
@@ -146,6 +160,9 @@ Invoke-RestMethod -Uri "http://localhost:8080/device/change_sensor_state" -Metho
 ```powershell
 # 运行完整测试脚本
 .\test_change_sensor_state.ps1
+
+# 运行Redis集成测试脚本
+.\test_redis_integration.ps1
 ```
 
 ### cURL测试
@@ -271,4 +288,53 @@ export default {
 | 修改设备状态 | `/device/change_sensor_state` |
 | 更新设备信息 | `/device/update_device_name` |
 
-这个接口为物联网设备管理系统提供了核心的设备状态控制功能，可以实现远程开关设备的操作。 
+## Redis集成功能
+
+### Redis数据流
+1. **联查数据库**: 根据 `deviceId` 联查 `device` 表和 `device_template` 表
+2. **获取topic**: 使用 `device_template.en_name` 作为Redis list的topic名称
+3. **数据推送**: 向Redis list推送JSON格式的设备状态消息
+
+### Redis消息格式
+```json
+{
+    "deviceId": 1,
+    "state": 1
+}
+```
+
+### Redis操作
+- **数据结构**: List
+- **Topic命名**: 使用 `device_template.en_name` (如: "temperature", "humidity", "air_component" 等)
+- **操作类型**: RPUSH (右侧推入)
+
+### Redis命令验证
+```bash
+# 查看某个topic的消息数量
+redis-cli LLEN temperature
+
+# 查看某个topic的所有消息
+redis-cli LRANGE temperature 0 -1
+
+# 弹出最早的消息 (LPOP)
+redis-cli LPOP temperature
+
+# 实时监控Redis操作
+redis-cli MONITOR
+```
+
+### 配置说明
+Redis连接配置位于 `application.properties`:
+```properties
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+spring.data.redis.password=
+spring.data.redis.database=0
+```
+
+### 错误处理
+- 如果设备不存在或没有关联的设备模板，会跳过Redis推送
+- 如果Redis连接失败，会抛出运行时异常但不影响数据库更新
+- 控制台会输出详细的Redis操作日志
+
+这个接口为物联网设备管理系统提供了核心的设备状态控制功能，可以实现远程开关设备的操作，并将状态变化实时推送到Redis消息队列。 

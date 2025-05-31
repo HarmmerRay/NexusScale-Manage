@@ -1,6 +1,7 @@
 package com.nexuscale.nexusscalemanage.service;
 
 import com.nexuscale.nexusscalemanage.entity.Device;
+import com.nexuscale.nexusscalemanage.entity.DeviceTemplate;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface DeviceService {
     int batchDeleteDevices(List<Long> device_ids);
     Device updateDevice(Device device);
     boolean updateDeviceState(int deviceId, int state);
+    DeviceTemplate getDeviceTemplateByDeviceId(int deviceId);
 }
