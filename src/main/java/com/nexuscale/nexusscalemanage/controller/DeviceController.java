@@ -22,18 +22,24 @@ public class DeviceController {
     DeviceTemplateService deviceTemplateService;
 
     @PostMapping("/change_sensor_state")
-    public Map<String, String> changeSensorState(@RequestParam boolean state, @RequestParam int sensor_id) {
-        System.out.println("state: " + state);
-        System.out.println("sensor_id: " + sensor_id);
-        Map<String, String> dict = new HashMap<>();
-        state = !state;
-        if (state) {
-            dict.put("msg", "设备状态修改成功，当前状态开启");
-        } else {
-            dict.put("msg", "设备状态修改成功，当前状态关闭" );
+    public Map<String, Object> changeSensorState(@RequestParam int state, @RequestParam int deviceId) {
+        System.out.println("接收到的状态: " + state);
+        System.out.println("设备ID: " + deviceId);
+        
+        try {
+            // 调用服务层更新设备状态
+            boolean success = deviceService.updateDeviceState(deviceId, state);
+            
+            if (success) {
+                String statusMsg = (state == 1) ? "开启" : "关闭";
+                return ApiResponse.success("设备状态修改成功，当前状态" + statusMsg);
+            } else {
+                return ApiResponse.fail("设备状态修改失败，设备不存在或更新失败");
+            }
+        } catch (Exception e) {
+            System.err.println("更新设备状态时发生异常: " + e.getMessage());
+            return ApiResponse.fail("设备状态修改失败：" + e.getMessage());
         }
-
-        return dict;
     }
     @GetMapping("/all_devices")
     public Map<String, Object> allDevices(@RequestParam String user_id) {

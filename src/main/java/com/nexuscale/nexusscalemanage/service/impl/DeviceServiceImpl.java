@@ -98,4 +98,19 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return null;
     }
+
+    @Override
+    public boolean updateDeviceState(int deviceId, int state) {
+        // 构建更新条件，只更新指定设备的状态
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Device::getDeviceId, deviceId);
+        
+        // 创建要更新的设备对象，只设置状态字段
+        Device device = new Device();
+        device.setState(state);
+        
+        // 执行更新操作
+        int result = deviceMapper.update(device, wrapper);
+        return result > 0;
+    }
 }

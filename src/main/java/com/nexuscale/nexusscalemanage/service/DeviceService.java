@@ -12,4 +12,5 @@ public interface DeviceService {
     int deleteDevice(long device_id);
     int batchDeleteDevices(List<Long> device_ids);
     Device updateDevice(Device device);
+    boolean updateDeviceState(int deviceId, int state);
 }
