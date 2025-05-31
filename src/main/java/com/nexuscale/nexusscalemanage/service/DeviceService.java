@@ -7,6 +7,7 @@ import java.util.List;
 public interface DeviceService {
     List<Device> allDevices(String userId);
     List<Device> searchDevices(String searchKey);
+    List<Device> searchDevicesByUserIdAndKey(String userId, String searchKey);
     Device createDevice(Device device);
     int deleteDevice(long device_id);
     int batchDeleteDevices(List<Long> device_ids);

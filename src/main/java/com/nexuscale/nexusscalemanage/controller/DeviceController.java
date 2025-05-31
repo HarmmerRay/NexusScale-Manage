@@ -63,6 +63,22 @@ public class DeviceController {
         }
         return ApiResponse.success(deviceService.searchDevices(searchKey));
     }
+    
+    @GetMapping("/search_devices_by_userid")
+    public Map<String,Object> searchDevicesByUserId(@RequestParam String userId, @RequestParam(required = false) String searchKey) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return ApiResponse.fail("用户ID不能为空");
+        }
+        
+        // 如果没有提供searchKey，返回该用户的所有设备
+        if (searchKey == null || searchKey.trim().isEmpty()) {
+            return ApiResponse.success(deviceService.allDevices(userId));
+        }
+        
+        // 根据用户ID和关键字搜索设备
+        List<Device> devices = deviceService.searchDevicesByUserIdAndKey(userId, searchKey);
+        return ApiResponse.success(devices);
+    }
     @PostMapping("/update_device_name")
     public Map<String,Object> updateDeviceName(@RequestParam long deviceId,@RequestParam String deviceName, HttpServletRequest request) {
         Device dev = new Device();

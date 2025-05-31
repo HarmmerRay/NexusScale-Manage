@@ -44,6 +44,29 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    public List<Device> searchDevicesByUserIdAndKey(String userId, String searchKey) {
+        // 先根据user_id筛选，再根据searchKey搜索设备名称、MAC地址等
+        String keyword = searchKey.trim();
+
+        // 使用 LambdaQueryWrapper 构建查询条件
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+
+        // 必须匹配指定的user_id
+        wrapper.eq(Device::getUserId, userId);
+
+        // 如果有搜索关键字，则进行模糊查询
+        if (keyword != null && !keyword.isEmpty()) {
+            wrapper.and(w -> w
+                    .like(Device::getDeviceName, keyword) // 设备名称模糊匹配
+                    .or()
+                    .like(Device::getDeviceMac, keyword) // 设备MAC地址模糊匹配
+            );
+        }
+
+        return deviceMapper.selectList(wrapper);
+    }
+
+    @Override
     public Device createDevice(Device device) {
         if (deviceMapper.insert(device) == 1){
             return device;
