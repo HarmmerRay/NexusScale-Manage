@@ -2,8 +2,11 @@ package com.nexuscale.nexusscalemanage.controller;
 
 import com.nexuscale.nexusscalemanage.dao.UserMapper;
 import com.nexuscale.nexusscalemanage.service.UserService;
+import com.nexuscale.nexusscalemanage.service.MessageService;
+import com.nexuscale.nexusscalemanage.service.OllamaService;
 import com.nexuscale.nexusscalemanage.util.*;
 import com.nexuscale.nexusscalemanage.entity.User;
+import com.nexuscale.nexusscalemanage.entity.Message;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +32,10 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private OllamaService ollamaService;
     //CRUD  登录和注册都有了。
     @PostMapping("/register")
     public Map<String,Object> register(@RequestParam String phone_number, @RequestParam String code, HttpServletResponse response) {
@@ -168,12 +175,41 @@ public class UserController {
         return ApiResponse.success(userService.updateUser(user));
     }
     @GetMapping("/search_users") //可以根据用户名、电话号码、角色来查找
-     public Map<String,Object> search_users(@RequestParam int currentPage,@RequestParam int pageSize,@RequestParam String keyword) {
+    public Map<String,Object> search_users(@RequestParam int currentPage,@RequestParam int pageSize,@RequestParam String keyword) {
 
         Map<String, Object> map = ApiResponse.success(userService.searchUser(currentPage,pageSize,keyword));
         map.put("currentPage", currentPage);
         map.put("total", userService.getUserCount(keyword));
         map.put("pageSize", pageSize);
         return map;
+    }
+
+    @PostMapping("/customer_service")
+    public Map<String,Object> customer_service(@RequestParam String userId,@RequestParam String message){
+        try {
+            // 1. 保存用户消息到数据库
+            Message userMessage = new Message();
+            userMessage.setUserId(userId);
+            userMessage.setFromClient(true);  // true表示来自客户端
+            userMessage.setMessage(message);
+            messageService.saveMessage(userMessage);
+            
+            // 2. 调用Ollama模型获取回复
+            String aiResponse = ollamaService.generateResponse(message);
+            
+            // 3. 保存AI回复到数据库
+            Message aiMessage = new Message();
+            aiMessage.setUserId(userId);
+            aiMessage.setFromClient(false);  // false表示来自服务端
+            aiMessage.setMessage(aiResponse);
+            messageService.saveMessage(aiMessage);
+            
+            // 4. 返回AI回复给前端
+            return ApiResponse.success(aiResponse);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiResponse.fail("客服服务暂时不可用，请稍后重试");
+        }
     }
 }
