@@ -1,7 +1,9 @@
 package com.nexuscale.nexusscalemanage.controller;
 
 import com.nexuscale.nexusscalemanage.entity.Device;
+import com.nexuscale.nexusscalemanage.entity.DeviceTemplate;
 import com.nexuscale.nexusscalemanage.service.DeviceService;
+import com.nexuscale.nexusscalemanage.service.DeviceTemplateService;
 import com.nexuscale.nexusscalemanage.util.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import java.util.Map;
 public class DeviceController {
     @Autowired
     DeviceService deviceService;
+    @Autowired
+    DeviceTemplateService deviceTemplateService;
 
     @PostMapping("/change_sensor_state")
     public Map<String, String> changeSensorState(@RequestParam boolean state, @RequestParam int sensor_id) {
@@ -79,6 +83,13 @@ public class DeviceController {
         List<Device> devices = deviceService.searchDevicesByUserIdAndKey(userId, searchKey);
         return ApiResponse.success(devices);
     }
+    
+    @GetMapping("/search_device_templates")
+    public Map<String,Object> searchDeviceTemplates() {
+        List<DeviceTemplate> templates = deviceTemplateService.getAllDeviceTemplates();
+        return ApiResponse.success(templates);
+    }
+    
     @PostMapping("/update_device_name")
     public Map<String,Object> updateDeviceName(@RequestParam long deviceId,@RequestParam String deviceName, HttpServletRequest request) {
         Device dev = new Device();
