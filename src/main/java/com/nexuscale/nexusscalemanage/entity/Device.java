@@ -45,4 +45,8 @@ public class Device {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
+
+    @ApiModelProperty("设备类型外键")
+    @TableField("dt_id")
+    private String dtId;
 }
