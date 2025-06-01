@@ -1,5 +1,6 @@
 package com.nexuscale.nexusscalemanage.service;
 
+import com.nexuscale.nexusscalemanage.dto.DeviceDataResponse;
 import com.nexuscale.nexusscalemanage.entity.Device;
 import com.nexuscale.nexusscalemanage.entity.DeviceTemplate;
 
@@ -15,4 +16,5 @@ public interface DeviceService {
     Device updateDevice(Device device);
     boolean updateDeviceState(int deviceId, int state);
     DeviceTemplate getDeviceTemplateByDeviceId(int deviceId);
+    DeviceDataResponse getDeviceData(Long deviceId, Integer timePeriodHours, Integer samplingIntervalMinutes);
 }

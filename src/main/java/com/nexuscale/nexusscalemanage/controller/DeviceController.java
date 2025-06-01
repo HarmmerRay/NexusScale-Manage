@@ -1,5 +1,6 @@
 package com.nexuscale.nexusscalemanage.controller;
 
+import com.nexuscale.nexusscalemanage.dto.DeviceDataResponse;
 import com.nexuscale.nexusscalemanage.dto.DeviceStateMessage;
 import com.nexuscale.nexusscalemanage.entity.Device;
 import com.nexuscale.nexusscalemanage.entity.DeviceTemplate;
@@ -122,5 +123,52 @@ public class DeviceController {
         dev.setDeviceId(deviceId);
         dev.setDeviceName(deviceName);
         return ApiResponse.success(deviceService.updateDevice(dev));
+    }
+    
+    @GetMapping("/get_device_data")
+    public Map<String, Object> getDeviceData(
+            @RequestParam Long deviceId,
+            @RequestParam Integer timePeriodHours,
+            @RequestParam Integer samplingIntervalMinutes) {
+        
+        try {
+            System.out.println("获取设备数据请求 - 设备ID: " + deviceId + 
+                             ", 时间范围: " + timePeriodHours + "小时" +
+                             ", 采样间隔: " + samplingIntervalMinutes + "分钟");
+            
+            // 参数验证
+            if (deviceId == null || deviceId <= 0) {
+                return ApiResponse.fail("设备ID不能为空或无效");
+            }
+            
+            if (timePeriodHours == null || timePeriodHours <= 0) {
+                return ApiResponse.fail("时间范围不能为空或无效");
+            }
+            
+            if (samplingIntervalMinutes == null || samplingIntervalMinutes < 0) {
+                samplingIntervalMinutes = 0; // 默认不采样，返回所有数据
+            }
+            
+            // 调用服务层获取设备数据
+            DeviceDataResponse deviceData = deviceService.getDeviceData(deviceId, timePeriodHours, samplingIntervalMinutes);
+            
+            if (deviceData == null) {
+                return ApiResponse.fail("获取设备数据失败");
+            }
+            
+            // 构造返回数据格式
+            Map<String, Object> data = new HashMap<>();
+            data.put("times", deviceData.getTimes());
+            data.put("values", deviceData.getValues());
+            
+            System.out.println("成功获取设备数据，数据点数量: " + deviceData.getTimes().size());
+            
+            return ApiResponse.success(data);
+            
+        } catch (Exception e) {
+            System.err.println("获取设备数据时发生异常: " + e.getMessage());
+            e.printStackTrace();
+            return ApiResponse.fail("获取设备数据失败：" + e.getMessage());
+        }
     }
 }

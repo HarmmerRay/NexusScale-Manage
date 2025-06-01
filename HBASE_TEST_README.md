@@ -150,10 +150,55 @@ hbase.column.family=cf1
    - 确认数据格式符合预期：`{"sensorType":{"value":numericValue}}`
    - 查看日志中的解析警告信息
 
+## 新增设备数据查询接口
+
+### API接口: `/device/get_device_data`
+
+**请求方式**: GET
+
+**请求参数**:
+- `deviceId` (Long): 设备ID
+- `timePeriodHours` (Integer): 时间范围（小时）
+- `samplingIntervalMinutes` (Integer): 采样间隔（分钟，0表示不采样）
+
+**返回格式**:
+```json
+{
+  "success": true,
+  "message": "操作成功",
+  "data": {
+    "times": ["14:30", "15:00", "15:30"],
+    "values": [80.2, 78.5, 82.1]
+  }
+}
+```
+
+**时间格式规则**:
+- 时间范围 ≤ 12小时: 显示 `HH:mm` 格式
+- 时间范围 > 12小时: 显示 `MM-dd HH:mm` 格式
+
+**使用示例**:
+```bash
+# 获取设备13最近24小时的数据，30分钟采样间隔
+curl "http://localhost:8080/device/get_device_data?deviceId=13&timePeriodHours=24&samplingIntervalMinutes=30"
+```
+
+### 测试方法
+
+1. **PowerShell测试脚本**
+   ```bash
+   ./test_device_data_api.ps1
+   ```
+
+2. **集成测试**
+   ```bash
+   mvn test -Dtest=DeviceDataIntegrationTest
+   ```
+
 ## 扩展功能
 
 可以根据需要扩展以下功能：
-- 按时间范围查询
+- 按时间范围查询 ✅ (已实现)
 - 按传感器类型过滤
 - 数据聚合统计
 - 实时数据监控
